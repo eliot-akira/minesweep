@@ -23,7 +23,7 @@ class Field
     void getMove();
 
     bool checkValidityOfQuickClear();
-  
+
   private:
     int l;
     int b;
@@ -32,11 +32,12 @@ class Field
     int y;
     int flags;
     int hiddenCells;
-    
+
     bool firstSweep;
-    
+    bool safeReveal;
+
     std::vector<std::pair<int, int>> mines; //store the location of mines
-    
+
     GRID cells;
 };
 
@@ -62,7 +63,6 @@ Field::Field()
     case CUSTOM:
         do
         {
-            dispBanner();
             std::cout << endl;
             std::cout << white_fg << "    Minimum breadth of MineField is 9" << endl;
             std::cout << white_fg << "    Maximum size of MineField is 30 x 16" << endl;
@@ -163,68 +163,39 @@ void Field::drawField()
 
     writeBuf << reset;
     writeBuf << "    ";
-    if (cells[0][0].hidden)
-        writeBuf << "┏";
-    else
-        writeBuf << reset << "┌";
+    writeBuf << reset << "┌";
 
     for (int i = 0; i < l - 1; ++i)
     {
-        if (cells[i][0].hidden)
-        {
-            writeBuf << "━━━";
-            if (cells[i + 1][0].hidden)
-                writeBuf << "┳";
-            else
-                writeBuf << "┱";
-        }
-        else
-        {
-            writeBuf << "───";
-            if (cells[i + 1][0].hidden)
-                writeBuf << "┲";
-            else
-                writeBuf << "┬";
-        }
+        writeBuf << "───";
+        writeBuf << "┬";
     }
 
-    if (cells[l - 1][0].hidden)
-        writeBuf << "━━━┓";
-    else
-        writeBuf << "───┐";
+    writeBuf << "───┐";
     writeBuf << endl;
 
     writeBuf << reset;
     for (int j = 0; j < b; ++j)
     {
-        if (cells[0][j].hidden)
-            writeBuf << "    ┃";
-        else
-            writeBuf << reset << "    │";
+        writeBuf << reset << "    │";
 
         for (int i = 0; i < l; ++i)
         {
-            if (cells[i][j].state != MINE || cells[i][j].hidden)
-                writeBuf << " ";
-            else
-                writeBuf << " "; //implement different whitespace char here
+            writeBuf << " "; //implement different whitespace char here
 
             if (i == x && j == y)
             {
                 if ((cells[i][j].hidden || cells[i][j].state == EMPTY) &&
                     (!cells[i][j].flagged))
-                    writeBuf << blue_bg << " ";
+                    writeBuf << white_bg << " "; // blue_bg
 
                 else
-                    writeBuf << blue_bg << cells[i][j].sym;
+                    writeBuf << white_bg << cells[i][j].sym;
             }
             else
                 writeBuf << cells[i][j].sym;
 
-            if (cells[i][j].hidden || (i != l - 1 && cells[i + 1][j].hidden))
-                writeBuf << reset << " ┃";
-            else
-                writeBuf << reset << " │";
+            writeBuf << reset << " │";
         }
 
         if (j != b - 1)
@@ -233,107 +204,23 @@ void Field::drawField()
             writeBuf << reset;
             writeBuf << "    ";
 
-            if (cells[0][j].hidden)
-            {
-                if (cells[0][j + 1].hidden)
-                    writeBuf << "┣";
-                else
-                    writeBuf << "┡";
-            }
-
-            else
-            {
-                if (cells[0][j + 1].hidden)
-                    writeBuf << "┢";
-                else
-                    writeBuf << "├";
-            }
+            writeBuf << "├";
 
             for (int k = 0; k < l - 1; ++k)
             {
-                if (cells[k][j].hidden)
-                {
-                    writeBuf << "━━━";
-
-                    if (cells[k + 1][j].hidden && !cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╇";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╉";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && !cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╃";
-                    }
-
-                    else
-                    {
-                        writeBuf << "╋";
-                    }
-                }
-                else
-                {
-                    if (cells[k][j + 1].hidden)
-                        writeBuf << "━━━";
-                    else
-                        writeBuf << "───";
-
-                    if (cells[k + 1][j].hidden && !cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╄";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╅";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && !cells[k][j + 1].hidden && cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╆";
-                    }
-
-                    else if (cells[k + 1][j].hidden && !cells[k][j + 1].hidden && cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╊";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && cells[k][j + 1].hidden && cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "╈";
-                    }
-
-                    else if (!cells[k + 1][j].hidden && !cells[k][j + 1].hidden && !cells[k + 1][j + 1].hidden)
-                    {
-                        writeBuf << "┼";
-                    }
-
-                    else
-                    {
-                        writeBuf << "╋";
-                    }
-                }
+                writeBuf << "───";
+                writeBuf << "┼";
             }
 
             if (cells[l - 1][j].hidden)
             {
-                writeBuf << "━━━";
-                if (cells[l - 1][j + 1].hidden)
-                    writeBuf << "┫";
-                else
-                    writeBuf << "┩";
+                writeBuf << "───";
+                writeBuf << "┤";
             }
 
             else
             {
-                if (cells[l - 1][j + 1].hidden)
-                    writeBuf << "━━━┪";
-                else
-                    writeBuf << "───┤";
+                writeBuf << "───┤";
             }
         }
 
@@ -342,36 +229,15 @@ void Field::drawField()
     }
 
     writeBuf << "    ";
-    if (cells[0][b - 1].hidden)
-        writeBuf << "┗";
-    else
-        writeBuf << "└";
+    writeBuf << "└";
 
     for (int i = 0; i < l - 1; ++i)
     {
-        if (cells[i][b - 1].hidden)
-        {
-            writeBuf << "━━━";
-            if (cells[i + 1][b - 1].hidden)
-                writeBuf << "┻";
-            else
-                writeBuf << "┹";
-        }
-        else
-        {
-            writeBuf << "───";
-            if (cells[i + 1][b - 1].hidden)
-                writeBuf << "┺";
-            else
-                writeBuf << "┴";
-        }
+        writeBuf << "───";
+        writeBuf << "┴";
     }
 
-    if (cells[l - 1][b - 1].hidden)
-        writeBuf << "━━━┛";
-    else
-        writeBuf << "───┘";
-
+    writeBuf << "───┘";
     writeBuf << endl;
 
     writeBuf.goToLine(0);
@@ -436,6 +302,24 @@ void Field::getMove()
         }
         startSweep(x, y);
         return;
+
+    case K_R:
+        if (firstSweep)
+        {
+            mineTheField();
+            markAdjMineCells();
+            firstSweep = false;
+        }
+        if (cells[x][y].flagged)
+        {
+            ++flags;
+            ++flagDisp;
+            cells[x][y].toggleflag();
+        }
+        safeReveal = true;
+        startSweep(x, y);
+        safeReveal = false;
+        return;
     }
 }
 
@@ -473,7 +357,7 @@ bool Field::checkValidityOfQuickClear()
         }
     }
 
-    bool valid = flagsCopy == cells[x][y].noOfAdjMines; 
+    bool valid = flagsCopy == cells[x][y].noOfAdjMines;
     if (valid)
     {
         for (int i = x - 1; i < x + 2; ++i)
@@ -538,15 +422,17 @@ void Field::startSweep(int x, int y)
             checkVictoryAndFlagMines();
             if(isValid)
                 break;
-            else 
+            else
                 return;
         }
 
     case MINE:
+      if (!safeReveal) {
         gameState = DEFEAT;
         for (auto mine : mines)
             cells[mine.first][mine.second].reveal();
-        return;
+      }
+      return;
     }
 
     startSweep(x - 1, y - 1, CORNER, LEFT      , UP        );
@@ -589,7 +475,7 @@ void Field::startSweep(int x, int y, POSOFCELL pos, DIR_X x_dir, DIR_Y y_dir)
         else
         {
             startSweep(x + x_dir, y + y_dir, EDGE , x_dir, y_dir);
-            
+
             if (y_dir == NULL_DIR_Y)
             {
                 startSweep(x + x_dir, y - 1, CORNER, x_dir     , UP  );
@@ -611,6 +497,8 @@ void Field::startSweep(int x, int y, POSOFCELL pos, DIR_X x_dir, DIR_Y y_dir)
     case ADJ_TO_MINE:
         cells[x][y].reveal();
         --hiddenCells;
+        break;
+    case MINE:
         break;
     }
 }

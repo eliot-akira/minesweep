@@ -16,8 +16,8 @@ int main()
     {
         system("clear");
 
-        dispBanner();
         field.drawField();
+        dispBanner();
         dispFlagCounter();
         
         if (gameState != RUNNING)

@@ -43,7 +43,7 @@ Cell::Cell()
     hidden = true;
     flagged = false;
     state = EMPTY;
-    sym = white_bg + " ";
+    sym = blue_fg + "•";
 }
 
 void Cell::toggleflag()
@@ -52,10 +52,10 @@ void Cell::toggleflag()
     {
         flagged = !flagged;
         if (flagged)
-            sym = green_fg + "▶";
-        
+            sym = yellow_fg + "▶";
+
         else
-            sym = white_bg + " ";
+            sym = blue_fg + "•";
     }
 }
 

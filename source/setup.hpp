@@ -59,6 +59,7 @@ enum KEYS
 	K_RIGHT = 'C',
 	K_F = 'f',		//flag a cell
 	K_S = 's',		//sweep an area
+	K_R = 'r',		//reveal a cell
 	K_ENTER = '\n', //sweep an area
 	K_SPACE = ' '   //flag a cell
 };

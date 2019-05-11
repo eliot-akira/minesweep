@@ -1,38 +1,28 @@
-# MineSweeper
+# MineSweep
 
 Command Line version of MineSweeper for Unix-like systems (GNU/Linux, macOS, BSD).
 
+Forked from https://github.com/unknownblueguy6/MineSweeper
+
+Changes:
+
+- Simplified
+- Cleaned up UI, grid, colors
+- Added "Reveal" action, to safely show empty space
+
 <p align="center">
-    <img align="center" src="assets/demo.gif"></img>
+    <img align="center" src="assets/minesweep.png"></img>
 </p>
 
 ## Prerequisites
-1. C++11 compiler
 
+- C++11 compiler
 
 ## Installation
 
-1. Clone the repo.
-
 ```bash
-$ git clone https://github.com/unknownblueguy6/MineSweeper.git
-```
-
-2. cd to the MineSweeper folder, and then build it using the Makefile.
-   
-   (Change the compiler in the Makefile, if required. Default compiler is g++)
-   
-```bash
-$ cd MineSweeper
+$ git clone https://github.com/eliot-akira/minesweep.git
+$ cd minesweep
 $ make
-```
-
-3. Run it.
-
-```bash
 $ ./mine
 ```
-
-## TODO:
-
-1. Update the gif with new controls
