@@ -2,17 +2,7 @@
 
 Command Line version of MineSweeper for Unix-like systems (GNU/Linux, macOS, BSD).
 
-Forked from https://github.com/unknownblueguy6/MineSweeper
-
-Changes:
-
-- Simplified
-- Cleaned up UI, grid, colors
-- Added "Reveal" action, to safely show empty space
-
-<p align="center">
-    <img align="center" src="assets/minesweep.png"></img>
-</p>
+<img src="assets/minesweep.png"></img>
 
 ## Prerequisites
 
@@ -26,3 +16,13 @@ $ cd minesweep
 $ make
 $ ./mine
 ```
+
+## Notes
+
+Forked from https://github.com/unknownblueguy6/MineSweeper
+
+Changes:
+
+- Simplified
+- Cleaned up UI, grid, colors
+- Added "Reveal" action, to safely show empty space
